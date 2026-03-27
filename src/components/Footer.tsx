@@ -13,13 +13,14 @@ export default function Footer() {
           <div>
             <h4 className="text-xs uppercase tracking-widest text-charcoal/50 mb-4">Location</h4>
             <address className="not-italic text-sm text-charcoal/80 space-y-1">
-              <p>123 Culinary District</p>
-              <p>Metropolis, NY 10001</p>
+              <p>Liberation Road, Market Circle</p>
+              <p>Takoradi, Western Region</p>
+              <p>Ghana</p>
               <p className="pt-2 text-burgundy font-medium">contact@emberandvine.com</p>
-              <p>(555) 123-4567</p>
+              <p>+233 (0) 55 486 2900</p>
             </address>
           </div>
-          
+
           <div>
             <h4 className="text-xs uppercase tracking-widest text-charcoal/50 mb-4">Hours</h4>
             <ul className="text-sm text-charcoal/80 space-y-1">

@@ -12,7 +12,7 @@ type Message = {
 type ItemWithCategory = MenuItem & { category: string };
 
 function parsePrice(price: string): number {
-  return parseInt(price.replace('$', ''), 10);
+  return parseInt(price.replace('₵', '').replace(',', ''), 10);
 }
 
 function formatCategory(categoryName: string): string {
@@ -65,9 +65,11 @@ function getRuleBasedResponse(userInput: string): string {
 
   // BUDGET
   const budgetKeyword = /budget|spend|afford|i have|i've got|i'm working with/.test(lower);
-  const dollarMatch = lower.match(/\$\s*(\d+)|(\d+)\s*dollar/);
-  if (budgetKeyword && dollarMatch) {
-    const budget = parseInt(dollarMatch[1] || dollarMatch[2], 10);
+  const amountMatch = lower.match(/[₵$]\s*(\d[\d,]*)|(\d[\d,]*)\s*(?:cedis?|ghs|dollars?)/i)
+    || (budgetKeyword ? lower.match(/(\d[\d,]+)/) : null);
+  if (budgetKeyword && amountMatch) {
+    const raw = (amountMatch[1] || amountMatch[2] || '').replace(',', '');
+    const budget = parseInt(raw, 10);
     const starters = allItems.filter(i => i.category === 'Starters');
     const mains = allItems.filter(i => i.category === 'Mains');
     const cocktails = allItems.filter(i => i.category === 'Signature Cocktails');
@@ -114,12 +116,12 @@ function getRuleBasedResponse(userInput: string): string {
       });
       const remaining = budget - running;
       return (
-        `With a budget of $${budget}, here's a curated pairing:\n\n` +
+        `With a budget of ₵${budget}, here's a curated pairing:\n\n` +
         lines.join('\n') +
-        `\n\nTotal: $${running} — $${remaining} to spare`
+        `\n\nTotal: ₵${running} — ₵${remaining} to spare`
       );
     } else {
-      return `Our menu starts from $14 for desserts and $17 for cocktails. With a $${budget} budget, I'd suggest starting with a signature cocktail to set the mood.`;
+      return `Our menu starts from ₵190 for desserts and ₵220 for cocktails. With a ₵${budget} budget, I'd suggest starting with a signature cocktail to set the mood.`;
     }
   }
 
@@ -180,16 +182,26 @@ function getRuleBasedResponse(userInput: string): string {
     );
   }
 
+  // CALL / PHONE
+  if (/call|phone|telephone|contact|number|ring/.test(lower)) {
+    return "Of course! You can reach us directly by phone:\n\n📞 +233 (0) 55 486 2900\n\nWe're available Monday through Sunday, 5:00 PM to 11:00 PM. We'd love to hear from you!";
+  }
+
+  // LOCATION
+  if (/where|location|address|find you|located|takoradi|ghana/.test(lower)) {
+    return "We are located at:\n\n📍 Liberation Road, Market Circle\nTakoradi, Western Region, Ghana\n\nWe're open Mon–Thu 5pm–10pm, Fri–Sat 5pm–11pm, and Sunday 4pm–9pm. Reservations are highly recommended on weekends!";
+  }
+
   // HOURS
   if (/hour|open|close|when|time/.test(lower)) {
-    return "Ember & Vine is open Wednesday through Sunday, 5:30 PM to 10:30 PM. Reservations are recommended, especially on weekends. Shall I guide you to the booking form?";
+    return "Ember & Vine is open:\n\nMon – Thu: 5:00 PM – 10:00 PM\nFri – Sat: 5:00 PM – 11:00 PM\nSunday: 4:00 PM – 9:00 PM\n\nWe're based in Takoradi, Ghana. Reservations are recommended, especially on weekends. Shall I guide you to the booking form?";
   }
 
   // FALLBACK
   return (
     "I'm your Ember & Vine concierge — here to help with:\n\n" +
     "• Recommendations — \"What do you recommend?\"\n" +
-    "• Budget planning — \"I have a $60 budget\"\n" +
+    "• Budget planning — \"I have a ₵500 budget\"\n" +
     "• Dietary needs — \"Show me vegetarian options\"\n" +
     "• Menu browsing — \"What starters do you have?\"\n" +
     "• Dish details — \"Tell me about the ribeye\"\n" +
@@ -197,6 +209,16 @@ function getRuleBasedResponse(userInput: string): string {
     "How may I assist you this evening?"
   );
 }
+
+const QUICK_REPLIES = [
+  "What do you recommend?",
+  "Show me the starters",
+  "Vegetarian options",
+  "I have a ₵500 budget",
+  "Show me desserts",
+  "Book a table",
+  "I want to call",
+];
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -217,20 +239,20 @@ export default function Chatbot() {
     }
   }, [messages, isOpen]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
-
-    const userMessage = input.trim();
+  const sendMessage = async (text: string) => {
+    if (!text.trim() || isLoading) return;
     setInput('');
-    setMessages(prev => [...prev, { id: Date.now().toString(), role: 'user', content: userMessage }]);
+    setMessages(prev => [...prev, { id: Date.now().toString(), role: 'user', content: text }]);
     setIsLoading(true);
-
     await new Promise(resolve => setTimeout(resolve, 400));
-
-    const reply = getRuleBasedResponse(userMessage);
+    const reply = getRuleBasedResponse(text);
     setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: reply }]);
     setIsLoading(false);
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await sendMessage(input.trim());
   };
 
   return (
@@ -285,6 +307,19 @@ export default function Chatbot() {
                   </div>
                 </div>
               ))}
+              {messages.length === 1 && !isLoading && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {QUICK_REPLIES.map(reply => (
+                    <button
+                      key={reply}
+                      onClick={() => sendMessage(reply)}
+                      className="text-xs px-3 py-1.5 rounded-full border border-burgundy/40 text-burgundy hover:bg-burgundy hover:text-cream transition-colors"
+                    >
+                      {reply}
+                    </button>
+                  ))}
+                </div>
+              )}
               {isLoading && (
                 <div className="flex justify-start">
                   <div className="bg-cream border border-charcoal/5 text-charcoal p-3 rounded-md rounded-tl-none">

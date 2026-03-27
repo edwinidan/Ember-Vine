@@ -22,7 +22,7 @@ export default function Reservations() {
           <h3 className="text-burgundy tracking-[0.2em] uppercase text-sm mb-4">Join Us</h3>
           <h2 className="text-5xl md:text-7xl font-serif mb-8 text-charcoal">Make a Reservation</h2>
           <p className="text-lg text-charcoal/70 font-light mb-12 max-w-2xl mx-auto">
-            Experience the warmth of Ember & Vine. For parties of 6 or more, please contact the restaurant directly.
+            Experience the warmth of Ember & Vine, Takoradi. For parties of 6 or more, please call us directly on +233 (0) 55 486 2900.
           </p>
 
           {/* Glassmorphism Form Container */}

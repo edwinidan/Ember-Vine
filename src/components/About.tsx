@@ -56,10 +56,10 @@ export default function About() {
             
             <div className="space-y-6 text-charcoal/80 font-light leading-relaxed">
               <p>
-                Founded in 2024, Ember & Vine was born from a simple philosophy: the best flavors come from the earth and the fire. We source our ingredients from local purveyors and sustainable farms, letting the natural quality of the food shine through minimal, yet masterful, preparation.
+                Founded in 2024 in the heart of Takoradi, Ember & Vine was born from a simple philosophy: the best flavours come from the earth and the fire. Nestled in Ghana's vibrant Western Region, we source our ingredients from local farmers and coastal fishermen, letting the natural quality of the produce shine through masterful, minimal preparation.
               </p>
               <p>
-                Our kitchen is anchored by a custom-built wood-fired hearth, where our chefs coax complex, smoky profiles from premium cuts of meat and seasonal vegetables. Paired with a wine list curated to highlight bold, terroir-driven vintages, every meal here is designed to linger in your memory.
+                Our kitchen is anchored by a custom-built wood-fired hearth, where our chefs coax complex, smoky profiles from premium cuts of meat and the finest seasonal vegetables the region has to offer. Paired with a curated selection of wines and hand-crafted cocktails, every meal at Ember & Vine is designed to linger in your memory long after the last bite.
               </p>
             </div>
             
